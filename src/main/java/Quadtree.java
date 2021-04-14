@@ -46,6 +46,40 @@ public class Quadtree {
         nodes[3] = new Quadtree(level+1, new Rectangle(x + subWidth, y + subHeight, subWidth, subHeight));
     }
 
+    //DETERMINE WHICH NODE WITHIN THE BOUNDS THE OBJECT BELONGS TO
+    //-1 means the object cannot completely fit within a child node and is part of the parent node
+    private int getIndex(Rectangle pRect) {
+        int index = -1;
+        double verticalMidpoint = bounds.getX() + (bounds.getWidth()/2);
+        double horizontalMidpoint = bounds.getY() + (bounds.getHeight()/2);
+
+        //Object can fit completely within the top quadrants
+        boolean topQuadrant = (pRect.getY() < horizontalMidpoint && pRect.getY() + pRect.getHeight() < horizontalMidpoint);
+        //Object can fit completely within the bottom quadrants
+        boolean bottomQuadrant = (pRect.getY() > horizontalMidpoint);
+
+        //Object can fit within the left quadrants
+        if (pRect.getX() < verticalMidpoint && pRect.getX() + pRect.getWidth() < verticalMidpoint){
+            if (topQuadrant){
+                index = 1; //top left quadrant
+            }
+            else if (bottomQuadrant){
+                index = 2; //bottom left quadrant
+            }
+        }
+
+        //Object can fit completely within the right quadrants
+        if (pRect.getX() > verticalMidpoint){
+            if (topQuadrant){
+                index = 0; //top right quadrant
+            }
+            else if (bottomQuadrant){
+                index = 3; //bottom right quadrant
+            }
+        }
+        return index;
+    }
+
 
 
 
