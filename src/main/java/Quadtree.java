@@ -7,13 +7,13 @@ public class Quadtree {
     private int MAX_LEVELS = 5; //deepest level subnode
 
     private int level; //current node level (0 is the topmost level)
-    private ArrayList objects;
+    private ArrayList<Rectangle> objects;
     private Rectangle bounds; //2D space that the node occupies
     private Quadtree[] nodes; //four subnodes
 
     public Quadtree(int pLevel, Rectangle pBounds){
         level = pLevel;
-        objects = new ArrayList();
+        objects = new ArrayList<Rectangle>();
         bounds = pBounds;
         nodes = new Quadtree[4];
     }
@@ -79,6 +79,48 @@ public class Quadtree {
         }
         return index;
     }
+
+
+    //INSERT THE OBJECT INTO THE QUADTREE
+    //If the node exceeds the capacity it will split and add all the objects to their corresponding nodes
+    public void insert(Rectangle pRect) {
+        //does this current node have nodes? If yes:
+        if (nodes[0] != null){
+            int index = getIndex(pRect);
+            //gets the appropriate index using the position of the rect
+            if (index != -1){
+                nodes[index].insert(pRect);
+                //inserts the object in the node at this index, so it's now in the node tree in the correct node
+            }
+            return;
+        }
+
+        //adds pRect into the objects list for the current node
+        objects.add(pRect);
+
+        //has the node overflown with objects?
+        if (objects.size() > MAX_OBJECTS && level < MAX_LEVELS){
+            if (nodes[0] == null){
+                //does this node have subnodes? if not split into subnodes
+                split();
+            }
+
+            int i=0;
+            while (i < objects.size()){
+                //loop through all the objects in the list and get the index of each
+                int index = getIndex(objects.get(i));
+                //if index is not -1, insert the object into the new node and remove form objects list in current node
+                if (index != 1) {
+                    nodes[index].insert(objects.remove(i));
+                }
+                else {
+                    i++;
+                }
+            }
+        }
+
+    }
+
 
 
 
