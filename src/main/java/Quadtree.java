@@ -20,5 +20,33 @@ public class Quadtree {
 
     //the objects the quadtree will hold are rectangles
 
-    
+    //CLEAR THE QUADTREE
+    public void clear(){
+        objects.clear();
+
+        for (int i=0; i < nodes.length; i++) {
+            if (nodes[i] != null) {
+                nodes[i].clear();
+                nodes[i] = null;
+            }
+        }
+    }
+
+    //SPLIT THE NODE INTO 4 SUBNODES
+    //Divides the nodes into 4 equal parts and initializes the subnodes with the new bounds
+    private void split(){
+        int subWidth = (int)(bounds.getWidth() / 2);
+        int subHeight = (int)(bounds.getHeight() / 2);
+        int x = (int)bounds.getX();
+        int y = (int)bounds.getY();
+
+        nodes[0] = new Quadtree(level+1, new Rectangle(x + subWidth, y, subWidth, subHeight));
+        nodes[1] = new Quadtree(level+1, new Rectangle(x, y, subWidth, subHeight));
+        nodes[2] = new Quadtree(level+1, new Rectangle(x, y + subHeight, subWidth, subHeight));
+        nodes[3] = new Quadtree(level+1, new Rectangle(x + subWidth, y + subHeight, subWidth, subHeight));
+    }
+
+
+
+
 }
