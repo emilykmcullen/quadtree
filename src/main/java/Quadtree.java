@@ -91,11 +91,11 @@ public class Quadtree {
             if (index != -1){
                 nodes[index].insert(pRect);
                 //inserts the object in the node at this index, so it's now in the node tree in the correct node
+                return;
             }
-            return;
         }
-
-        //adds pRect into the objects list for the current node
+        //if there are no child nodes or the object doesn't fit into a child node (goes over the bounds borders)
+        //adds pRect into the objects list for the current (parent) node
         objects.add(pRect);
 
         //has the node overflown with objects?
@@ -110,6 +110,8 @@ public class Quadtree {
                 //loop through all the objects in the list and get the index of each
                 int index = getIndex(objects.get(i));
                 //if index is not -1, insert the object into the new node and remove form objects list in current node
+                //so any objects that can fit completely into the child nodes are put there
+                //and any that cant (they cross over the bounds borders) stay in the current (parent) node
                 if (index != 1) {
                     nodes[index].insert(objects.remove(i));
                 }
@@ -118,7 +120,23 @@ public class Quadtree {
                 }
             }
         }
+    }
 
+
+    //RETURN ALL OBJECTS IN ALL NODES THAT COULD COLLIDE WITH THE GIVEN OBJECT
+    public ArrayList<Rectangle> retrieve(ArrayList<Rectangle> returnObjects, Rectangle pRect){
+        int index = getIndex(pRect);
+        //if we have child nodes and the pRect can fit completely into one of them:
+        if(index != -1 && nodes[0] != null){
+            //go to the node at that index and call the function again
+            //this keeps going until there are no more nodes or the index is -1 (so it is overlapping the bounds)
+            nodes[index].retrieve(returnObjects, pRect);
+        }
+
+        //when index is -1 or there are no child nodes, all the objects at this node are added to returnObjects
+        returnObjects.addAll(objects);
+
+        return returnObjects;
     }
 
 
